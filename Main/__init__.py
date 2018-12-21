@@ -111,7 +111,7 @@ def GetChannelNameList(ChannelList):
 
 
 def SaveChannelBase(channels):
-    with open(ChannelBase,'w') as f:   
+    with open(ChannelBase,mode='w') as f:   
         json.dump(channels,f,ensure_ascii=False,indent=0)
 
 
@@ -120,13 +120,13 @@ def UpdateChannelBase(BaseChannels, TrashChannels):
        
 ###############################################################################       
     
-    BaseChannels['Param'].append({'Base Update' : datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S"),
-                                  'Other Param' : 'test param'})
-    
+    BaseChannels['LastUpdate'] = datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")
+ 
 ###############################################################################
                                                                  
-    NewChannelCount = 0
-    UpdatedChannels = 0    
+    NewChannelsCount = 0
+    UpdatedChannelsCount = 0
+    DeletedChannelsCount = 0    
     BaseChannelNameList = GetChannelNameList(BaseChannels['channels'])
     
 ############################################################################### 
@@ -142,20 +142,27 @@ def UpdateChannelBase(BaseChannels, TrashChannels):
                                              'visible':True,
                                              'Last Update':datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S"),
                                              'remark': ''})    
-            NewChannelCount+=1
-    print('Add ' + str(NewChannelCount)+ 'channels')
+            NewChannelsCount+=1
+    print('Add ' + str(NewChannelsCount) + ' channels')
             
 ###############################################################################
             
     for BaseChannel in BaseChannels['channels']:
+        DeleteChannel = True
         for TrashChannel in TrashChannels['channels']:
-            if BaseChannel['TrashName']==TrashChannel['name'] and BaseChannel['url']!=TrashChannel['url']: 
-                BaseChannel['url'] = TrashChannel['url']
-                BaseChannel['Last Update'] = datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")
-                UpdatedChannels+=1
+            if BaseChannel['TrashName']==TrashChannel['name']:
+                DeleteChannel = False
+                if BaseChannel['url']!=TrashChannel['url']:
+                    BaseChannel['url'] = TrashChannel['url']
+                    BaseChannel['Last Update'] = datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")  
+                    print(TrashChannel['name'])              
+                    UpdatedChannelsCount+=1
+        if DeleteChannel:
+            BaseChannel['visible'] = False
+            DeletedChannelsCount+=1
 
-    print('Trash: '+str(len(TrashChannels['channels']))+' Base: '+str(len(BaseChannels['channels'])))
-    print('Updated: '+str(UpdatedChannels))
+    print('Update '+str(UpdatedChannelsCount) + ' channels')
+    print(str(DeletedChannelsCount) + ' channels not in Trash channels list')
     SaveChannelBase(BaseChannels)
     
     
@@ -166,7 +173,10 @@ def UpdateChannelBase(BaseChannels, TrashChannels):
   
   
 TrashChannels = GetTrashChannels()
-ChannelsBase = {'Param' : [],'channels' : []}
+ChannelsBase = {'LastUpdate' : [],'channels' : []}
+
+with open(ChannelBase) as f:
+    ChannelsBase = json.load(f)
 
 UpdateChannelBase(ChannelsBase, TrashChannels)
 
