@@ -165,10 +165,7 @@ def UpdateChannelBase(BaseChannels, TrashChannels):
     print(str(DeletedChannelsCount) + ' channels not in Trash channels list')
     SaveChannelBase(BaseChannels)
     
-    
-    
-#DownloadTrashChannels(forceUpdate=False)  
-  
+###############################################################################  
   
   
   
