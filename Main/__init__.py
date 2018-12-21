@@ -29,7 +29,8 @@ def GetLastModified():
 
 def DownloadTrashChannels(forceUpdate=False):
     
-############################################################################### 
+###############################################################################
+
     print('Trying to download Trash channels list. Force update: '+str(forceUpdate))
     
     TrashChannels = '{"channels":""}'
@@ -75,8 +76,8 @@ def DownloadTrashChannels(forceUpdate=False):
                 print(str(LastModifiedFile)+' saved.')
         except:
             print(str(LastModifiedFile)+' SAVE ERROR.')               
-           
-    
+              
+
 
 def GetTrashChannels():
     
@@ -99,30 +100,6 @@ def GetTrashChannels():
                 
     return TrashChannels
 
-        
-
-def CreateChannelBase():
-    
-    ChannelAttribute = []
-    
-    UpdateTrashChannels()
-    with open(TrashFile, encoding='utf-8') as f:
-        TrashChannelList = json.load(f)
-    for TrashChannel in TrashChannelList['channels']:
-        ChannelAttribute.append({'name':TrashChannel['name'],
-                                 'TrashName':TrashChannel['name'],
-                                 'TvgName':TrashChannel['name'],
-                                 'Logo':TrashChannel['name']+'.png',
-                                 'url':TrashChannel['url'],
-                                 'group':TrashChannel['cat'],
-                                 'visible':True,
-                                 'Last Update':'',
-                                 'remark':''})
-    ChannelBaseArray = {'channels':ChannelAttribute}
-    
-    with open(ChannelBase,'w') as f:
-        json.dump(ChannelBaseArray,f,ensure_ascii=False,indent=0)    
-
 
 
 def GetChannelNameList(ChannelList):
@@ -131,37 +108,44 @@ def GetChannelNameList(ChannelList):
         NameList.append(i['name'])
     return NameList
 
+
+
 def SaveChannelBase(channels):
     with open(ChannelBase,'w') as f:   
         json.dump(channels,f,ensure_ascii=False,indent=0)
 
 
+
 def UpdateChannelBase(BaseChannels, TrashChannels):
        
-    
-    BaseChannelNameList = GetChannelNameList(BaseChannels['channels'])
+###############################################################################       
     
     BaseChannels['Param'].append({'Base Update' : datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S"),
                                   'Other Param' : 'test param'})
-                                                                 
-    AddChannelCount = 0
-    UpdatedChannels = 0
     
-    print('Trash: '+str(len(TrashChannels['channels']))+' Base: '+str(len(BaseChannels['channels'])))
+###############################################################################
+                                                                 
+    NewChannelCount = 0
+    UpdatedChannels = 0    
+    BaseChannelNameList = GetChannelNameList(BaseChannels['channels'])
+    
+############################################################################### 
     
     for TrashChannel in TrashChannels['channels']:
         if TrashChannel['name'] not in BaseChannelNameList:
             BaseChannels['channels'].append({'name':TrashChannel['name'],
-                                'TrashName':TrashChannel['name'],
-                                'TvgName':TrashChannel['name'],
-                                'Logo':TrashChannel['name']+'.png',
-                                'url':'',
-                                'group':TrashChannel['cat'],
-                                'visible':True,
-                                'Last Update':datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S"),
-                                'remark': ''})    
-            AddChannelCount+=1
-            print(str(AddChannelCount)+str(TrashChannel['name']))
+                                             'TrashName':TrashChannel['name'],
+                                             'TvgName':TrashChannel['name'],
+                                             'Logo':TrashChannel['name']+'.png',
+                                             'url':'',
+                                             'group':TrashChannel['cat'],
+                                             'visible':True,
+                                             'Last Update':datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S"),
+                                             'remark': ''})    
+            NewChannelCount+=1
+    print('Add ' + str(NewChannelCount)+ 'channels')
+            
+###############################################################################
             
     print('Trash: '+str(len(TrashChannels['channels']))+' Base: '+str(len(BaseChannels['channels'])))
     for BaseChannel in BaseChannels['channels']:
@@ -173,13 +157,15 @@ def UpdateChannelBase(BaseChannels, TrashChannels):
                 print(str(UpdatedChannels)+str(BaseChannel['TrashName']))
 
     print('Trash: '+str(len(TrashChannels['channels']))+' Base: '+str(len(BaseChannels['channels'])))
-    print('Add: '+str(AddChannelCount))
     print('Updated: '+str(UpdatedChannels))
     SaveChannelBase(BaseChannels)
     
     
     
 #DownloadTrashChannels(forceUpdate=False)  
+  
+  
+  
   
 TrashChannels = GetTrashChannels()
 ChannelsBase = {'Param' : [],'channels' : []}
