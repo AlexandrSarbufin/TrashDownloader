@@ -147,14 +147,12 @@ def UpdateChannelBase(BaseChannels, TrashChannels):
             
 ###############################################################################
             
-    print('Trash: '+str(len(TrashChannels['channels']))+' Base: '+str(len(BaseChannels['channels'])))
     for BaseChannel in BaseChannels['channels']:
         for TrashChannel in TrashChannels['channels']:
-            if BaseChannel['TrashName']==TrashChannel['name'] and BaseChannel['url']!=TrashChannel['url']:
-                UpdatedChannels+=1 
+            if BaseChannel['TrashName']==TrashChannel['name'] and BaseChannel['url']!=TrashChannel['url']: 
                 BaseChannel['url'] = TrashChannel['url']
                 BaseChannel['Last Update'] = datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")
-                print(str(UpdatedChannels)+str(BaseChannel['TrashName']))
+                UpdatedChannels+=1
 
     print('Trash: '+str(len(TrashChannels['channels']))+' Base: '+str(len(BaseChannels['channels'])))
     print('Updated: '+str(UpdatedChannels))
